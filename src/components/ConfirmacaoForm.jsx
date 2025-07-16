@@ -7,22 +7,21 @@ export default function ConfirmacaoForm() {
   const [enviado, setEnviado] = useState(false);
 
   const handleSubmit = (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSeo8guyF6aC2Gl0wtdJ7Vzya7zoGxlz1W9OZGTyRzvn7PNvCw/formResponse";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzbl_18XnPrNzOy1pju_2UtYBt9ifmYsYSLg2hTjh9tc8CPGjCsfQrAPPSjKbvCbM-rCA/exec";
 
-  const formData = new URLSearchParams();
-    formData.append("entry.452741845", nome);
-    formData.append("entry.111392562", presenca);
-    formData.append("entry.889573436", presente);
+    const formData = new FormData();
+    formData.append('nome', nome);
+    formData.append('presenca', presenca);
+    formData.append('presente', presente);
+    formData.append('action', 'confirmacao');
+    
 
-    fetch(formUrl, {
+    fetch(scriptURL, {
       method: "POST",
-      mode: "no-cors",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: formData
+      body: formData,
+      mode: "no-cors"
     }).then(() => setEnviado(true));
   };
 
