@@ -1,0 +1,51 @@
+.detalhesEvento {
+  text-align: center;
+  padding: 2rem;
+  background-color: #fffaf0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.detalhesEvento h2 {
+  font-size: 2rem;
+  color: #5c3d1c;
+  margin-bottom: 2rem;
+}
+
+.cartoesContainer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.card {
+  background-color: #e5c991;
+  border: 2px solid #fce7c2;
+  border-radius: 12px;
+  padding: 1rem;
+  width: 260px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.03);
+}
+
+.card h3 {
+  color: #555;
+  margin: 0;
+}
+
+.card p {
+  margin: 0.8rem 0 0.4rem;
+  color: #3d2e15;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.icone {
+  font-size: 2rem;
+  color: #d4af37;
+  margin-bottom: 0.5rem;
+}

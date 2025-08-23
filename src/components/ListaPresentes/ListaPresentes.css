@@ -1,0 +1,113 @@
+.container-presentes {
+  padding: 2rem;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.mensagem{
+  font-size: 1.2rem;
+    color: #9d5607;
+}
+
+.textocard {
+  font-size: 1rem;
+  font-style: italic;
+  margin: 0;
+  background-color: #9d5607;
+  border-radius: 10px;
+  color: #fff;
+  heigth: 1.5rem;
+}
+
+.textocardSelecionado{
+  font-size: 1rem;
+  font-style: italic;
+  margin: 0;
+}
+
+.lista-presentes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.modal h2, .modal p, .modal h3{
+  color: rgb(82, 82, 82);;
+}
+
+.card-presente {
+  display: grid;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  width: 30%;
+  height: auto;
+  padding: 1rem;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+
+.card-presente:hover {
+  transform: scale(1.03);
+}
+
+.card-presente h3{
+  color: rgb(72, 72, 72);
+}
+
+.card-presente img {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.card-presente button {
+  margin-top: 10px;
+  padding: 0.5rem 1rem;
+  background-color: #f4c542;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.card-presente button:hover {
+  background-color: #e6b500;
+}
+
+@media (max-width: 768px) {
+  /* .card-presente {
+    flex: 0 1 100%;
+  } */
+}
+
+.btn-finalizar {
+  margin-top: 2rem;
+  padding: 0.8rem 2rem;
+  background-color: #d4af37;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  color: #4a3b0b;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-finalizar:hover {
+  background-color: #c19e2d;
+}
+
+.card-presente.bloqueado {
+  opacity: 0.5;
+  /* Deixa o item com aparência de desabilitado */
+  pointer-events: none;
+  /* Impede que o item seja clicado */
+}
+
+.card-presente.bloqueado img {
+  filter: grayscale(100%);
+  /* Aplica um efeito de escala de cinza na imagem */
+}

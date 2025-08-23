@@ -1,0 +1,52 @@
+:root{
+  --card:#ffffff;
+  --card-soft:#fff1f3;
+  --text:#2f2f2f;
+  --muted:#6b7280;
+  --accent:#e23b5a;
+  --shadow:0 10px 30px rgba(0,0,0,.08);
+  --radius:22px;
+  --stroke:#e5e7eb;
+}
+
+.rc{
+  display:grid; gap:14px;
+}
+.rc--light{}
+
+.rc-head{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  flex-wrap:wrap;
+}
+
+.rc-pill{
+  display:inline-flex; align-items:center; gap:10px;
+  background:#fde7e3; color:var(--accent); font-weight:800;
+  border-radius:999px; padding:8px 14px;
+}
+
+.rc-edit{
+  background:#fff; border:1px solid var(--stroke); color:#1f2937;
+  border-radius:999px; padding:8px 14px; font-weight:600; cursor:pointer;
+}
+.rc-edit:hover{ background:#f9fafb }
+
+.rc-info-card{
+  background:var(--card-soft);
+  border-radius:14px; padding:16px; box-shadow:0 4px 8px rgba(0,0,0,.05);
+  text-align:center;
+}
+.rc-title{
+  display:inline-flex; align-items:center; gap:10px;
+  color:var(--accent); font-weight:800; font-size:20px; margin-bottom:6px;
+}
+.icon{font-size:18px}
+.rc-line{margin:6px 0 0 0; font-size:18px; color:var(--text)}
+.rc-sub{color:var(--muted); font-size:16px}
+.rc-pre{white-space:pre-wrap}
+
+/* responsivo */
+@media (max-width:700px){
+  .rc-title{font-size:18px}
+  .rc-line{font-size:16px}
+}

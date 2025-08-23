@@ -1,8 +1,138 @@
-/* .imagem-principal {
-    width: 100%;
-    height: 25rem;
-    border-radius: 10px;
-    object-fit: cover;
-    margin-bottom: 1rem;
-    
-} */
+:root{
+  --bg:#0f1115;
+  --card:#171923;
+  --muted:#aab1c3;
+  --text:#e8ecf3;
+  --brand:#ffd166;          /* dourado principal */
+  --brand-2:#ffe39a;        /* degradê do botão */
+  --ring: rgba(255, 209, 102, 0.35);
+  --stroke: rgba(255,255,255,.08);
+}
+
+/* BACKDROP + ANIMAÇÃO */
+.convite-backdrop{
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.55);
+  display: grid; place-items: center;
+  padding: 24px; z-index: 50;
+  backdrop-filter: blur(2px);
+}
+.animate-in{ animation: scaleIn .14s ease-out both }
+@keyframes scaleIn{ from{transform:scale(.96); opacity:0} to{transform:scale(1); opacity:1} }
+
+/* MODAL */
+.convite-modal{
+  position: relative;
+  width: min(980px,100%);
+  max-height: 90vh; overflow-y: auto;
+  background: var(--card); color: var(--text);
+  border-radius: 24px; display: grid;
+  grid-template-columns: 1fr; /* (apenas coluna de conteúdo) */
+  box-shadow: 0 20px 70px rgba(0,0,0,.45);
+  border: 1px solid var(--stroke);
+}
+
+.convite-fechar{
+  position: absolute; top: 10px; right: 12px;
+  width: 36px; height: 36px; font-size: 22px;
+  color: var(--text); background: transparent; border: 0;
+  cursor: pointer; z-index: 3;
+}
+
+/* CONTEÚDO */
+.convite-body{ padding: 22px 20px 20px; }
+
+/* CABEÇALHO */
+.overline{
+  font-weight:800; letter-spacing:.3px; margin:0 0 4px;
+  color:#f1c45e; font-size:14px;
+}
+.convite-header h1{
+  font-size: 28px; margin: 0 0 2px; letter-spacing:.2px;
+}
+.convite-header .hosts{
+  font-weight: 700; font-size: 18px; margin: 0 0 10px; color: #f1c45e;
+}
+.subcopy{ margin:0 0 16px; color: var(--muted); }
+
+/* DETALHES DO EVENTO */
+.detalhes-evento{ list-style:none; padding:0; margin: 10px 0 18px; display:grid; gap:8px }
+.detalhes-evento li{
+  display:flex; gap:10px; align-items:center;
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--stroke);
+  padding: 10px 12px; border-radius: 999px;  /* pill */
+}
+.detalhes-evento .icon{ width: 22px; text-align:center }
+.detalhes-evento a{ color: var(--text); text-decoration: underline }
+.muted{ color: var(--muted) }
+
+/* FORM */
+.rsvp-form{ display:grid; gap:14px }
+.campo{ display:grid; gap:6px }
+.campo label{ font-size:13px; color: var(--muted) }
+.campo input, .campo select, .campo textarea{
+  background:#e8ecf3; color: #111;
+  border: 1px solid rgba(255,255,255,.10);
+  padding: 12px; border-radius: 12px; outline: none;
+}
+.campo textarea{ min-height: 90px; resize: vertical }
+.campo input:focus, .campo select:focus, .campo textarea:focus{
+  border-color: var(--brand); box-shadow: 0 0 0 6px var(--ring);
+}
+.grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:12px }
+@media (max-width:560px){ .grid-2{ grid-template-columns: 1fr } }
+
+/* BOTÕES */
+.acoes{ display:flex; gap:10px; align-items:center }
+.btn-primaria{
+  padding: 12px 16px; border-radius: 12px;
+  background: linear-gradient(180deg, var(--brand), var(--brand-2));
+  border: none; color: #222; font-weight: 800; cursor: pointer;
+}
+.btn-primaria:disabled{ opacity:.7; cursor:not-allowed }
+.btn-secundaria{
+  padding: 10px 12px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.16);
+  background: rgba(255,255,255,.04); color: var(--text);
+  text-decoration: none; display:inline-flex; align-items:center; justify-content:center;
+}
+.btn-link{ background:none; border:none; color: var(--brand); cursor:pointer; text-decoration: underline }
+.nota{ font-size:12px; color: var(--muted); margin-top:-4px }
+
+/* ESCOLHA: PRESENTE x PIX */
+.escolha-wrap{ display:grid; gap:14px }
+.escolha-title{ margin:0 0 6px; font-weight:800 }
+.escolha-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:12px }
+@media (max-width:680px){ .escolha-grid{ grid-template-columns: 1fr } }
+.escolha-card{
+  text-align:left; background: rgba(255,255,255,.03);
+  border: 1px solid var(--stroke); border-radius: 14px;
+  padding: 16px; cursor:pointer; color: var(--text);
+  display:grid; gap:6px; text-decoration:none;
+}
+.escolha-card:hover{ outline: 2px solid rgba(255,209,102,.35) }
+.escolha-emoji{ font-size:28px }
+.escolha-head{ font-weight:800 }
+.escolha-sub{ color: var(--muted); font-size:14px }
+
+/* PIX BOX (simplificado) */
+.pix-box{ display:grid; gap:12px }
+.pix-title{ display:flex; align-items:center; gap:8px; font-weight:800; color:#f1c45e }
+.pix-key-row{ display:flex; gap:8px }
+.pix-key{
+  flex:1; background:#0f121a; color:var(--text);
+  border:1px solid rgba(255,255,255,.1); border-radius:12px; padding:12px
+}
+
+/* CONFIRMAÇÃO */
+.confirmacao{
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--stroke);
+  border-radius: 14px; padding: 16px;
+}
+
+/* SCROLL SUAVE NA MODAL */
+.convite-modal::-webkit-scrollbar{ width: 10px }
+.convite-modal::-webkit-scrollbar-thumb{ background: rgba(255,255,255,.15); border-radius: 8px }
+.convite-modal::-webkit-scrollbar-track{ background: transparent }
