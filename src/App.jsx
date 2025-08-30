@@ -6,18 +6,20 @@ import { useParams } from 'react-router-dom';
 import './App.css';
 
 function App() {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const [dadosConvidado, setDadosConvidado] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!id); // só carrega se existir id
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!id) return;
-      setLoading(true);
+    if (!id) return; // sem id, não busca
+    let cancelled = false;
+
+    (async () => {
       try {
+        setLoading(true);
         const dados = await getListas("getListaDeConvidados");
         const convidado = Array.isArray(dados) ? dados.find(item => item?.[0] === id) : null;
-        if (convidado) {
+        if (!cancelled && convidado) {
           const [, nome, quantidade, presenca, presenteDescricao] = convidado;
           setDadosConvidado({
             nome,
@@ -30,25 +32,38 @@ function App() {
       } catch (err) {
         console.error("Erro ao carregar convidado:", err);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
-    };
-    fetchData();
+    })();
+
+    return () => { cancelled = true; };
   }, [id]);
 
+  // 1) Acesso sem id: mostra página inicial
+  if (!id) {
+    return (
+      <div className="tela-inicial">
+        <Header />
+        <p>Bem-vindo! Para acessar seu convite, use o link personalizado encaminhado para você.</p>
+      </div>
+    );
+  }
+
+  // 2) Com id: enquanto busca
   if (loading) return <div>Carregando...</div>;
 
-  // ✅ decide qual tela mostrar
-  if (dadosConvidado?.presenca === "Sim") {
+  // 3) Já confirmou? Mostra resumo
+  if (dadosConvidado && dadosConvidado.presenca !== "Ainda não confirmou") {
     return (
       <ResumoConfirmacao
         theme="light"
         dados={dadosConvidado}
-        onEditar={() => window.location.reload()} // ou outro fluxo para reabrir Header
+        onEditar={() => window.location.reload()}
       />
     );
   }
 
+  // 4) Não confirmou: mostra Header com modal de confirmação
   return <Header nomeConvidado={id} />;
 }
 

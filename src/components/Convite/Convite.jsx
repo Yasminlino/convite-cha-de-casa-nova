@@ -1,39 +1,46 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./Convite.css";
 import ListaPresentes from "../ListaPresentes/ListaPresentes.jsx";
-import ResumoConfirmacao from "../ResumoConfirmacao/ResumoConfirmacao.jsx";
+import confetti from "canvas-confetti";
 
 async function enviarConfirmacao(payload) {
-  const scriptURL = "https://script.google.com/macros/s/AKfycbzNb7Br8_m_RE7es89vIgqtM1Ck2zdROBLM3LoGiYFtEvgWq1tCGT6yHH7-eolomUOOkA/exec";
+  const scriptURL = "https://script.google.com/macros/s/AKfycbyREvtR6GpmcXIQUFDDnzygH7ktzKTaunwHyzP-L3sZKvWo0Q3kbTuYd6vsTt6KubFZMQ/exec";
   const formData = new FormData();
+  // Mantido conforme seu código original (dois "nome")
+  formData.append("id", payload.id ?? "");
   formData.append("nome", payload.nome ?? "");
   formData.append("presenca", payload.presenca ?? "");
   formData.append("quantidade", String(payload.quantidade ?? 0));
-  formData.append("presente", payload.presenteDescricao || "");
+  formData.append("presente", payload.presenteDescricao || "PIX");
   formData.append("action", "confirmacao");
   await fetch(scriptURL, { method: "POST", body: formData, mode: "no-cors" });
 }
 
 export default function Convite({
   dadosConvidado = [],
-  onClose = () => {},
-  pixKey = "chave-pix@exemplo.com" // 🔑 personalize aqui
+  onClose = () => { },
+  pixKey = "chave-pix@exemplo.com"
 }) {
   const [form, setForm] = useState({
-    nome: Array.isArray(dadosConvidado) && dadosConvidado.length > 0 ? (dadosConvidado[0]?.[1] ?? "") : "",
-    presenca: "Sim",
-    quantidade: 1,   // ✅ começa em 1
+    id: dadosConvidado.id ? dadosConvidado.id : (Array.isArray(dadosConvidado) ? dadosConvidado?.[0]?.[0] : ""),
+    nome: Array.isArray(dadosConvidado) && dadosConvidado.length > 0
+      ? (dadosConvidado[0]?.[1] ?? "")
+      : (dadosConvidado?.nome ?? ""),
+    presenca: dadosConvidado.presenca ? dadosConvidado.presenca : "Sim",
+    quantidade: dadosConvidado.quantidade ? dadosConvidado.quantidade : 1,
     presenteDescricao: "",
     mensagem: ""
   });
 
   const [enviando, setEnviando] = useState(false);
-  const [ok, setOk] = useState(false);
 
-  // passos do fluxo
+  // fluxo
   const [mostrarEscolha, setMostrarEscolha] = useState(false);
   const [mostrarPresentes, setMostrarPresentes] = useState(false);
   const [mostrarPix, setMostrarPix] = useState(false);
+
+  // ✅ modal de agradecimento (sem auto-reload)
+  const [showThanks, setShowThanks] = useState(false);
 
   const evento = useMemo(() => ({
     titulo: "Chá de Casa Nova",
@@ -46,14 +53,12 @@ export default function Convite({
 
   const modalRef = useRef(null);
 
-  // Fecha ao clicar fora
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) onClose();
   };
 
-  // Fecha com ESC
   useEffect(() => {
-    const onKey = (e) => e.key === "Escape" && onClose();
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose]);
@@ -63,39 +68,38 @@ export default function Convite({
     setForm((f) => ({ ...f, [name]: value }));
   };
 
+  // 🔔 abre apenas a modal de agradecimento (sem redirecionar)
+  const openThanks = () => {
+    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+    setShowThanks(true)
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.nome.trim() || !form.presenca) return;
 
-    // valida se vai comparecer
     if (form.presenca === "Sim" && (!form.quantidade || form.quantidade < 1)) {
       alert("Por favor, informe pelo menos 1 pessoa.");
       return;
     }
 
     if (form.presenca === "Sim") {
-      // vai para a escolha: presente OU PIX
       setMostrarEscolha(true);
     } else {
-      // Não vai comparecer / Talvez -> confirma direto
       setEnviando(true);
       await enviarConfirmacao(form);
-      setOk(true);
       setEnviando(false);
+      openThanks(); // apenas abre a modal
     }
   };
 
-  // callback quando escolhe um presente
   const handleEscolheuPresente = async (nomePresente) => {
     setEnviando(true);
     await enviarConfirmacao({ ...form, presenteDescricao: nomePresente });
-    setOk(true);
-    setMostrarPresentes(false);
-    setMostrarEscolha(false);
     setEnviando(false);
+    openThanks(); // apenas abre a modal
   };
 
-  // PIX — apenas copiar chave e confirmar sem presente agora
   const copiarChave = async () => {
     try {
       await navigator.clipboard.writeText(pixKey);
@@ -108,10 +112,8 @@ export default function Convite({
   const confirmarSemPresente = async () => {
     setEnviando(true);
     await enviarConfirmacao({ ...form, presenteDescricao: "" });
-    setOk(true);
-    setMostrarPix(false);
-    setMostrarEscolha(false);
     setEnviando(false);
+    openThanks(); // apenas abre a modal
   };
 
   return (
@@ -131,12 +133,11 @@ export default function Convite({
           <button type="button" className="convite-fechar" aria-label="Fechar" onClick={onClose}>×</button>
 
           {/* 1) Form */}
-          {!ok && !mostrarEscolha && !mostrarPresentes && !mostrarPix && (
-            <form className="rsvp-form" onSubmit={handleSubmit} noValidate>
-              <header className="convite-header">
-                <h2 className="overline">Você está convidado(a)!</h2>
-                <h1 id="convite-title">{evento.titulo}</h1>
-                <h2 className="hosts">{evento.anfitrioes}</h2>
+          {!mostrarEscolha && !mostrarPresentes && !mostrarPix && (
+            <form className="rsvp-form" onSubmit={handleSubmit} noValidate>              
+              <header className="hero padd">
+                <h1 className="hero-title titlep">Chá de Casa Nova</h1>
+                <p className="hero-subtitle textp">Carlos, Yasmin & Ágatha</p>
                 <p className="subcopy">Venha celebrar esse novo capítulo com a gente! Sua presença fará toda a diferença 💛</p>
               </header>
 
@@ -204,7 +205,7 @@ export default function Convite({
           )}
 
           {/* 2) Escolha: Presente ou PIX */}
-          {!ok && mostrarEscolha && !mostrarPresentes && !mostrarPix && (
+          {mostrarEscolha && !mostrarPresentes && !mostrarPix && (
             <div className="escolha-wrap">
               <h3 className="escolha-title">Como você prefere contribuir?</h3>
               <div className="escolha-grid">
@@ -231,12 +232,12 @@ export default function Convite({
           )}
 
           {/* 3) Lista de Presentes */}
-          {!ok && mostrarPresentes && (
+          {mostrarPresentes && (
             <ListaPresentes onConfirmar={handleEscolheuPresente} onClose={onClose} />
           )}
 
-          {/* 4) PIX (simplificado: só copiar a chave + confirmar sem presente) */}
-          {!ok && mostrarPix && (
+          {/* 4) PIX (simplificado) */}
+          {mostrarPix && (
             <div className="pix-box">
               <div className="pix-title"><span aria-hidden>💛</span> Contribuir via PIX</div>
 
@@ -265,31 +266,30 @@ export default function Convite({
               </div>
             </div>
           )}
-
-          {/* 5) Confirmação final */}
-          {ok && (
-            <div className="confirmacao">
-              <ResumoConfirmacao
-                dados={{
-                  nome: form.nome,
-                  presenca: form.presenca,
-                  quantidade: form.quantidade,
-                  presenteDescricao: form.presenteDescricao,
-                  mensagem: form.mensagem
-                }}
-                onEditar={() => {
-                  setOk(false);
-                  setMostrarEscolha(true);
-                }}
-              />
-              <div className="acoes">
-                <a className="btn-secundaria" href={evento.localMaps} target="_blank" rel="noreferrer">Abrir mapa</a>
-                <button className="btn-link" onClick={onClose}>Fechar</button>
-              </div>
-            </div>
-          )}
         </section>
       </div>
+
+      {/* ✅ MODAL DE AGRADECIMENTO (só redireciona ao clicar no botão) */}
+      {showThanks && (
+        <div
+          className="thanks-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="thanks-title"
+          onClick={(e) => { if (e.target === e.currentTarget) setShowThanks(false); }}
+        >
+          <div className="thanks-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="thanks-emoji" aria-hidden>💛</div>
+            <h3 id="thanks-title" className="thanks-title">Obrigado pela confirmação!</h3>
+            <p className="thanks-sub">Sua presença foi registrada com sucesso.</p>
+            <div className="thanks-actions">
+              <button className="btn-primaria" onClick={() => window.location.reload()}>
+                Ver resumo agora
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

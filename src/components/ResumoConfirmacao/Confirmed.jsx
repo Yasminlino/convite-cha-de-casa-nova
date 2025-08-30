@@ -84,7 +84,7 @@ export default function Confirmed({ nomeConvidado, dados, onEditar = () => {} })
         <section className="info-card" id="localizacao">
           <div className="info-title"><span className="icon">📍</span>Localização</div>
           <p className="info-line">
-            <strong>Rua das Flores, 123 – Centro, Cidade/UF</strong>
+            <strong>Rua Décio Barreto, 295 – Centro, Cidade/UF</strong>
           </p>
           <a
             className="btn-link"

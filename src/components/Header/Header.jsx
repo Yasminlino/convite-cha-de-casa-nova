@@ -2,13 +2,20 @@ import React, { useEffect, useState } from "react";
 import "./Header.css";
 import Convite from "../Convite/Convite";
 import { getListas } from "../../services/GetListas";
-import { useNavigate } from "react-router-dom";
 
 // 👉 Altere aqui a data do evento
 const dataEvento = new Date("2025-10-05T16:00:00");
 
 export default function Header({ nomeConvidado }) {
-  const [lista, setLista] = useState([]);
+  // Estado NORMALIZADO de convidado
+  const [convidado, setConvidado] = useState({
+    id: nomeConvidado || "",
+    nome: nomeConvidado || "",     // mostra algo imediatamente
+    quantidade: 0,
+    presenca: "",
+    presenteDescricao: ""
+  });
+
   const [loading, setLoading] = useState(false);
   const [modalTipo, setModalTipo] = useState(null);
   const [tempoRestante, setTempoRestante] = useState({
@@ -17,35 +24,37 @@ export default function Header({ nomeConvidado }) {
     minutos: "00",
   });
 
-  const navigate = useNavigate();
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-      const dados = await getListas("getListaDeConvidados");
-      const convidado = dados.filter((item) => item[0] === nomeConvidado);
+      try {
+        const dados = await getListas("getListaDeConvidados");
+        // procura pelo id
+        const linha = Array.isArray(dados) ? dados.find(item => item?.[0] === nomeConvidado) : null;
 
-      if (convidado.length > 0) {
-        setLista(convidado);
-        const [, nome, quantidade, presenca, presenteDescricao] = convidado[0];
-        if (presenca === "Sim") {
-          navigate(`/convite-cha-de-casa-nova/${nomeConvidado}/confirmado`, {
-            state: {
-              dados: {
-                nome,
-                presenca,
-                quantidade: Number(quantidade) || 0,
-                presenteDescricao,
-                mensagem: "",
-              },
-            },
+        if (linha) {
+          const [id, nome, quantidade, presenca, presenteDescricao] = linha;
+          setConvidado({
+            id: id ?? nomeConvidado,
+            nome: nome || nomeConvidado,
+            quantidade: Number(quantidade) || 0,
+            presenca: presenca || "",
+            presenteDescricao: presenteDescricao || ""
           });
+        } else {
+          // mantém pelo menos id e um nome amigável
+          setConvidado(prev => ({
+            ...prev,
+            id: nomeConvidado,
+            nome: prev.nome || nomeConvidado
+          }));
         }
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     fetchData();
-  }, [nomeConvidado, navigate]);
+  }, [nomeConvidado]);
 
   useEffect(() => {
     const intervalo = setInterval(() => {
@@ -79,25 +88,35 @@ export default function Header({ nomeConvidado }) {
       <header className="hero">
         <div className="hero-icon" role="img" aria-label="Casa">🏡</div>
         <h1 className="hero-title">Chá de Casa Nova</h1>
-        <p className="hero-subtitle">Yasmin & Carlos</p>
+        <p className="hero-subtitle">Carlos, Yasmin</p>
+        <p className="hero-subtitle"> & </p>
+        <p className="hero-subtitle">Ágatha</p>
         <img className="imagem-principal" src="./assets/Images/Familia.jpg" alt="" />
       </header>
 
       <div className="secao-geral">
         {/* CARTÃO PRINCIPAL */}
         <main className="convite-card">
-          <h2 className="script-title">Você está convidado(a)!</h2>
+          <h2 className="script-title">
+            {loading ? "Carregando..." : convidado.nome ? `Olá, ${convidado.nome || ""}!` : "Você está convidado(a)!"}
+          </h2>
+
           <p className="lead">
-            Estamos muito felizes em compartilhar este momento especial com você!
-            Acabamos de nos mudar para nossa nova casa e queremos celebrar com
-            quem amamos.
+            Estamos muito felizes em compartilhar este momento especial com vocês!
+          </p>
+          <p className="lead">
+            E nada melhor do que começar essa nova etapa ao lado de pessoas tão especiais.
           </p>
 
           <div className="emoji-row" aria-hidden="true">🎉 ☕ 🍰 🎁</div>
 
           <div className="cta-wrapper" id="confirmar">
-            <button className="btn-primary" onClick={() => setModalTipo("confirmar")}>
-              Confirmar presença
+            <button
+              className="btn-primary"
+              onClick={() => setModalTipo("confirmar")}
+              disabled={loading}
+            >
+              {loading ? "Aguarde..." : "Confirmar presença"}
             </button>
           </div>
         </main>
@@ -121,7 +140,7 @@ export default function Header({ nomeConvidado }) {
           </div>
         </section>
 
-        {/* DATA & HORÁRIO — mesmo layout da imagem */}
+        {/* DATA & HORÁRIO */}
         <section className="info-card" id="data-horario">
           <div className="info-title"><span className="icon">📅</span>Data & Horário</div>
           <p className="info-line"><strong>Sábado, 05 de Outubro de 2025</strong></p>
@@ -132,7 +151,7 @@ export default function Header({ nomeConvidado }) {
         <section className="info-card" id="localizacao">
           <div className="info-title"><span className="icon">📍</span>Localização</div>
           <p className="info-line">
-            <strong>Rua das Flores, 123 – Centro, Cidade/UF</strong>
+            <strong>Rua Décio Barreto, 295 – Centro, Cidade/UF</strong>
           </p>
           <a
             className="btn-link"
@@ -148,7 +167,9 @@ export default function Header({ nomeConvidado }) {
           <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && fecharModal()}>
             <div className="modal-wrapper" onClick={(e) => e.stopPropagation()}>
               <button className="fechar-modal" onClick={fecharModal} aria-label="Fechar modal">×</button>
-              {modalTipo === "confirmar" && <Convite dadosConvidado={lista} onClose={fecharModal} />}
+              {modalTipo === "confirmar" && (
+                <Convite dadosConvidado={convidado} onClose={fecharModal} />
+              )}
             </div>
           </div>
         )}

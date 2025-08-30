@@ -4,7 +4,7 @@
     --bg-start: #fff3ea;
     --bg-end: #ffe9df;
     --card: #ffffff;
-    --card-soft: #fff1f3;
+    --card-soft: #ffd4b8;
     /* rosinha do card */
     --text: #2f2f2f;
     --muted: #6b7280;
@@ -79,6 +79,8 @@ body {
     object-fit: cover;
     border-radius: 22px;
     box-shadow: var(--shadow);
+    object-fit: cover;
+    object-position: top!important;
 }
 
 /* CARD BASE */
@@ -120,7 +122,8 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    background: radial-gradient(#034912, #59bf00);
+    width: 90%;
     color: #fff;
     border: none;
     border-radius: 999px;
@@ -183,7 +186,7 @@ body {
 
 /* INFO CARDS — (iguais ao print) */
 .info-card {
-    background: rgb(241, 186, 119);
+    background: var(--card-soft);
     border-radius: 14px;
     padding: 18px 16px;
     margin: 16px 0;
@@ -208,7 +211,7 @@ body {
 .info-line {
     margin: 8px 0 0 0;
     font-size: 20px;
-    color: var(--text)
+    color: #747272;
 }
 
 .info-sub {
